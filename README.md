@@ -1,6 +1,6 @@
 # 유진홈센터 DB 설명 봇 — 텔레그램 운영용 최소 패키지
 
-DB **실거래 숫자**가 아니라 **표·컬럼 설명(메타데이터)** 만 `ehcmall_index.json` 에서 찾아 JSON으로 돌려주는 **로컬 API**와, OpenClaw에 넣는 **스킬·템플릿**만 모은 폴더입니다.  
+**표·컬럼 설명(메타데이터)** 를 `ehcmall_index.json` 에서 찾아 JSON으로 돌려주는 **로컬 API**와, OpenClaw에 넣는 **스킬·템플릿**만 모은 폴더입니다.  
 원본 CSV·ETL·대량 `descriptions/` 등은 포함하지 않습니다.
 
 ## 포함된 것
@@ -28,18 +28,6 @@ cp openclaw/SKILL_explain.md ~/.openclaw/skills/ehcmall-db-explain/SKILL.md
 cp openclaw/SKILL_search.md  ~/.openclaw/skills/ehcmall-db-search/SKILL.md
 ```
 
-## GitHub에 올릴 때
-
-- 이 디렉터리만 **새 저장소 루트**로 쓰거나, `git subtree` 등으로 분리해 푸시하면 됩니다.
-- **`data/*.json` 은 커밋하지 마세요** (`.gitignore` 처리됨).
-
-## 모노레포와 동기화
-
-이 폴더가 `ehcmall` 저장소 안에 있을 때, 상위에서 API·스킬·`catalog_dates.py` 를 다시 복사하려면:
-
-```bash
-bash sync-from-parent.sh
-```
 
 ---
 
