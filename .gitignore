@@ -1,0 +1,14 @@
+# 인덱스·토큰 (배포 시 별도 전달)
+data/*.json
+data/*.ttl
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# macOS
+.DS_Store

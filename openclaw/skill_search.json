@@ -1,0 +1,34 @@
+{
+  "name": "ehcmall_db_search",
+  "display_name": "EHC Mall DB 테이블 검색",
+  "description": "테이블 이름·도메인·설명 키워드로 검색합니다. 챗봇은 보통 첫 호출 limit=10, 더 보기 시 limit=250.",
+  "version": "1.0.0",
+  "type": "http",
+  "http": {
+    "method": "GET",
+    "base_url": "https://YOUR_API_HOST",
+    "path": "/v1/search",
+    "query_params": [
+      {
+        "name": "q",
+        "type": "string",
+        "required": true,
+        "description": "검색어 (테이블명 일부 또는 도메인 키워드)"
+      },
+      {
+        "name": "domain",
+        "type": "string",
+        "required": false,
+        "description": "도메인 한정 (예: 쇼핑몰). 생략 시 전체에서 검색"
+      },
+      {
+        "name": "limit",
+        "type": "integer",
+        "required": false,
+        "description": "최대 결과 개수 (API 기본 50, 상한 250). 챗봇은 첫 질의 10·더보기 250 권장."
+      }
+    ],
+    "response_type": "json",
+    "max_response_tokens": 8000
+  }
+}
