@@ -39,7 +39,6 @@ LLM → 한국어 답변 → 텔레그램
 | `openclaw/skill.json` / `skill_search.json` | 스킬 메타 정의 (OpenClaw용) |
 | `openclaw/system_prompt.md` | 에이전트 시스템 프롬프트 |
 | `서버시작.command` | macOS에서 API를 더블클릭으로 기동 |
-| `sync-from-parent.sh` | 상위 저장소에서 변경된 파일을 이 패키지로 동기화 |
 
 **포함하지 않는 것:** 원본 CSV, ETL 코드(`etl/`), 대량 `descriptions/` 등. 인덱스는 별도로 `data/`에 받아야 합니다.
 
