@@ -35,7 +35,6 @@ LLM → 한국어 답변 → 텔레그램
 | `openclaw/SKILL_explain.md` | 테이블·컬럼 설명 스킬 |
 | `openclaw/SKILL_search.md` | 테이블 검색 스킬 |
 | `openclaw/SOUL_EHCMALL_TEMPLATE.md` | 유진홈 전용 에이전트 SOUL 템플릿 |
-| `openclaw/setup_ehcmall_agent.sh` | OpenClaw 에이전트·봇 연결 자동 설정 스크립트 |
 | `openclaw/skill.json` / `skill_search.json` | 스킬 메타 정의 (OpenClaw용) |
 | `openclaw/system_prompt.md` | 에이전트 시스템 프롬프트 |
 | `서버시작.command` | macOS에서 API를 더블클릭으로 기동 |
