@@ -10,7 +10,7 @@
 사용자 (텔레그램)
     │  질문
     ▼
-OpenClaw (이 PC)
+OpenClaw gateway
     │  스킬 실행
     ▼
 FastAPI (localhost:8000)
@@ -19,8 +19,11 @@ FastAPI (localhost:8000)
 LLM → 한국어 답변 → 텔레그램
 ```
 
-- OpenClaw와 API가 **같은 PC**에서 돌아야 합니다.
+- OpenClaw와 API가 **같은 호스트**에서 돌아야 합니다 (서로 `localhost:8000` 통신).
 - API는 사전에 ETL로 생성된 `ehcmall_index.json`만 읽으며, 실제 DB에 직접 접근하지 않습니다.
+- 운영 모드는 두 가지:
+  - **로컬 (Mac)**: OpenClaw가 사용자 PC에서 돌아 사용자 디스크(`~/Downloads/...`)에 직접 파일을 저장할 수 있다.
+  - **서버 (Oracle Free Tier 등)**: Linux 서버에서 PM2로 24/7 운영. 결과물은 텔레그램으로만 전달.
 
 ---
 
@@ -29,20 +32,26 @@ LLM → 한국어 답변 → 텔레그램
 | 경로 | 설명 |
 |------|------|
 | `api/main.py` | FastAPI 서버. `ehcmall_index.json`을 메모리에 로드해 JSON 응답 |
-| `api/requirements.txt` | 의존 패키지 (fastapi, uvicorn) |
+| `requirements.txt` | Python 의존 패키지 (fastapi, uvicorn, reportlab) |
 | `catalog_dates.py` | 테이블 기간·날짜 메타 정규화 및 한국어 기간 문구 생성. ETL·API가 동일 규칙을 공유 |
 | `data/` | `ehcmall_index.json` 배치 위치 (git에서 제외됨) |
 | `openclaw/SKILL_explain.md` | 테이블·컬럼 설명 스킬 |
 | `openclaw/SKILL_search.md` | 테이블 검색 스킬 |
+| `openclaw/SKILL_export.md` | CSV/PDF export 스킬 정의 (분기·명령 포함) |
+| `openclaw/SKILL_report.md` | DB 전체 개요 PDF 리포트 스킬 |
+| `openclaw/SKILL_send.md` | 저장된 파일 재전송 스킬 |
 | `openclaw/SOUL_EHCMALL_TEMPLATE.md` | 유진홈 전용 에이전트 SOUL 템플릿 |
 | `openclaw/skill.json` / `skill_search.json` | 스킬 메타 정의 (OpenClaw용) |
 | `openclaw/system_prompt.md` | 에이전트 시스템 프롬프트 |
-| `서버시작.command` | macOS에서 API를 더블클릭으로 기동 |
+| `openclaw/plugin-ehcmall-export-gate/` | OpenClaw 플러그인: export 요청 `before_dispatch` 게이트 |
 | `scripts/export_tables.py` | 키워드·도메인·직접 지정으로 테이블 수집 → CSV/PDF 생성 → 텔레그램 전송 |
 | `scripts/export_pdf.py` | PDF 전용 래퍼. export_tables.py에 인자를 그대로 전달 |
 | `scripts/generate_report.py` | DB 전체 개요 PDF 생성 전용 |
 | `scripts/send_file.py` | 파일 단독 텔레그램 전송 유틸 |
-| `openclaw/SKILL_export.md` | CSV/PDF export 스킬 정의 (분기·명령 포함) |
+| `deploy/ecosystem.config.js` | PM2 프로세스 설정 (FastAPI + OpenClaw gateway) |
+| `deploy/server_setup.sh` | 서버 초기 셋업 보조 스크립트 |
+| `setup.sh` | 로컬(Mac) 초기 셋업 스크립트 |
+| `서버시작.command` | macOS에서 API를 더블클릭으로 기동 |
 
 **포함하지 않는 것:** 원본 CSV, ETL 코드(`etl/`), 대량 `descriptions/` 등. 인덱스는 별도로 `data/`에 받아야 합니다.
 
@@ -95,6 +104,68 @@ PDF 전송 직전, `--summary` 또는 `--recommendation` 값이 있으면 텍스
 - `--domain {도메인명}` 사용 조건 명시 (키워드 검색 금지 케이스)
 - `--search-json-only` 키워드 검색 조건 명시 (필터링 ON 기본 흐름)
 - 필터링 OFF 단일 exec 조건 명시
+
+---
+
+## 서버 배포 (24/7 운영)
+
+Oracle Free Tier 같은 Linux 서버에서 PM2로 항상 켜두는 절차. 사용자 PC가 꺼져 있어도 봇이 응답한다.
+
+### 시스템 의존성
+
+```bash
+# Node.js 22 (NodeSource)
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Python venv
+sudo apt install -y python3-venv python3-pip
+
+# 한글 PDF 폰트 (NanumGothic — generate_report.py / export_tables.py 가 자동 탐색)
+sudo apt install -y fonts-nanum
+
+# PM2
+sudo npm install -g pm2
+```
+
+> **메모리 1GB 환경 (Oracle Free Tier)**: `npm install` 중 OOM이 발생할 수 있어 swap 2GB 미리 추가 권장.
+> ```bash
+> sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile
+> sudo mkswap /swapfile && sudo swapon /swapfile
+> echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+> ```
+
+### 셋업
+
+```bash
+git clone <repo-url> ~/ehcmall-telegram-bot
+cd ~/ehcmall-telegram-bot
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+데이터·OpenClaw 설정은 별도 전송한다 (서버에서는 ETL을 돌리지 않는다).
+
+- `data/ehcmall_index.json` — Mac 등에서 scp/rsync로 복사
+- `~/.openclaw/` 의 `openclaw.json`, `skills/`, `workspace-ehcmall/`, `agents/`, `identity/` — Mac 환경에서 rsync. Mac 절대 경로(`/Users/...`, `/opt/anaconda3/...`)가 박힌 항목은 서버 경로로 일괄 치환 필요.
+
+### PM2 기동
+
+```bash
+pm2 start deploy/ecosystem.config.js   # ehcmall-api + ehcmall-bot 동시 실행
+pm2 save
+pm2 startup                            # 출력된 sudo 명령을 그대로 한 번 더 실행
+```
+
+`pm2 startup` 후 systemd에 등록되면 서버 재부팅에도 자동 복구된다.
+
+### 운영 점검
+
+```bash
+pm2 status                # 프로세스 상태
+pm2 logs ehcmall-bot --raw  # 실시간 로그
+```
 
 ---
 
