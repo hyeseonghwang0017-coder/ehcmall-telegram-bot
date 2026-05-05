@@ -27,7 +27,7 @@ from catalog_dates import (
 # ──────────────────────────────────────────────
 # 설정 상수
 # ──────────────────────────────────────────────
-DEFAULT_SEARCH_LIMIT = 50      # /v1/search 기본 반환 개수
+DEFAULT_SEARCH_LIMIT = 10      # /v1/search 기본 반환 개수 (텔레그램 첫 응답 적정)
 MAX_SEARCH_LIMIT = 250        # limit 파라미터 상한 (과대 응답 방지)
 
 INDEX_PATH = pathlib.Path(
@@ -297,27 +297,48 @@ def search(
     """
     q_lower = q.strip().lower()
     dom_needle = domain.strip().lower() if domain and domain.strip() else None
-    results = []
+    scored = []
     for name, entry in _INDEX.items():
         if dom_needle is not None:
             entry_dom = (entry.get("domain") or "").strip().lower()
             if entry_dom != dom_needle:
                 continue
+        entry_dom_lower = (entry.get("domain") or "").lower()
+        name_lower = name.lower()
         desc_head = (entry.get("description") or "")[:120].lower()
-        if (
-            q_lower in name.lower()
-            or q_lower in (entry.get("domain") or "").lower()
-            or q_lower in desc_head
-        ):
-            results.append({
+
+        # 매칭 우선순위 (낮을수록 먼저):
+        # 0 — 도메인 완전 일치
+        # 1 — 도메인에 키워드 포함
+        # 2 — 테이블명에 키워드 포함
+        # 3 — 설명에 키워드 포함
+        match_priority = None
+        if entry_dom_lower and entry_dom_lower == q_lower:
+            match_priority = 0
+        elif entry_dom_lower and q_lower in entry_dom_lower:
+            match_priority = 1
+        elif q_lower in name_lower:
+            match_priority = 2
+        elif q_lower in desc_head:
+            match_priority = 3
+        else:
+            continue
+
+        scored.append((
+            match_priority,
+            entry.get("rank") if entry.get("rank") is not None else 999999,
+            {
                 "table": name,
                 "domain": entry.get("domain") or None,
                 "rank": entry.get("rank"),
                 "score": entry.get("score"),
                 "description_snippet": _trunc(entry.get("description") or "", 120),
-            })
-        if len(results) >= limit:
-            break
+            },
+        ))
+
+    # 우선순위 → 순위(rank) 순 정렬, limit 만큼 잘라냄
+    scored.sort(key=lambda t: (t[0], t[1]))
+    results = [item[2] for item in scored[:limit]]
     out: dict = {
         "query": q,
         "limit": limit,
