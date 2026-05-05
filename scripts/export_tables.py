@@ -1008,23 +1008,6 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    # PDF 포맷에서 LLM이 --summary/--recommendation 을 빠뜨려도 PDF가
-    # 비어 보이지 않도록 기본 문구를 채워 넣는다 (방어 fallback).
-    if args.format == "pdf":
-        project_label = (args.project or "").strip() or "DB 분석"
-        if not args.summary:
-            args.summary = (
-                f"이 리포트는 «{project_label}» 에 활용 가능한 테이블 메타데이터를 모아 정리한 문서입니다. "
-                "각 테이블의 도메인 분류, 행 수, 컬럼 구성과 같은 메타정보가 본문에 포함되어 있습니다. "
-                "실제 활용 시 본문의 컬럼 상세와 추천 이유를 함께 검토하시기 바랍니다."
-            )
-        if not args.recommendation:
-            args.recommendation = (
-                "추천 구성안:\n"
-                f"• {project_label} 데이터 분석: 본문에 포함된 테이블 전체\n"
-                "본문의 테이블 메타정보를 바탕으로 분석 목적에 맞는 조합을 선택해 활용할 수 있습니다."
-            )
-
     # ── --search-only / --search-json-only ───────────────────────
     if args.search_only and args.search_json_only:
         print("[오류] --search-only 과 --search-json-only 는 동시에 쓸 수 없습니다.", file=sys.stderr)
