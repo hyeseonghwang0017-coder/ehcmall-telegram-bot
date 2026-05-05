@@ -1,0 +1,23 @@
+{
+  "id": "ehcmall-pairing-relay",
+  "name": "EHC Mall pairing relay",
+  "description": "Telegram ehcmall: owner /approve, /pending → openclaw pairing CLI.",
+  "activation": {
+    "onStartup": true
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "telegramAccountId": {
+        "type": "string",
+        "description": "Only run when ctx.accountId matches (default: ehcmall)"
+      },
+      "ownerTelegramId": {
+        "type": "string",
+        "description": "Telegram user id (string) of the owner who can approve. Required."
+      }
+    },
+    "required": ["ownerTelegramId"]
+  }
+}

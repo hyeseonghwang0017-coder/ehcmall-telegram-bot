@@ -1,0 +1,17 @@
+{
+  "name": "ehcmall-pairing-relay",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "OpenClaw plugin: owner /approve <code> in Telegram 1:1 → openclaw pairing approve",
+  "peerDependencies": {
+    "openclaw": ">=2026.4.0"
+  },
+  "openclaw": {
+    "extensions": ["./index.mjs"],
+    "compat": {
+      "pluginApi": ">=2026.4.0",
+      "minGatewayVersion": "2026.4.0"
+    }
+  }
+}
