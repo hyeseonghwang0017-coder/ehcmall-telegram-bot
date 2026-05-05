@@ -1,0 +1,39 @@
+{
+  "id": "ehcmall-export-gate",
+  "name": "EHC Mall export gate",
+  "description": "Telegram ehcmall: optional before_dispatch export. Default beforeDispatchMode=agent (pass-through). auto-export runs export_tables.py and skips the chat model.",
+  "activation": {
+    "onStartup": true
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "pythonPath": {
+        "type": "string",
+        "description": "Python interpreter (default: /opt/anaconda3/bin/python3)"
+      },
+      "exportScriptPath": {
+        "type": "string",
+        "description": "Absolute path to export_tables.py"
+      },
+      "telegramAccountId": {
+        "type": "string",
+        "description": "Only run when ctx.accountId matches (default: ehcmall)"
+      },
+      "openclawAccount": {
+        "type": "string",
+        "description": "Passed to --account on export_tables.py (default: ehcmall)"
+      },
+      "maxPicks": {
+        "type": "number",
+        "description": "LLM filter max tables (default: 12)"
+      },
+      "beforeDispatchMode": {
+        "type": "string",
+        "enum": ["agent", "auto-export"],
+        "description": "agent (default): export 요청을 대화 LLM+스킬로 넘김(JSON 선별). auto-export: 게이트에서 스크립트만 실행하고 채팅 모델 생략"
+      }
+    }
+  }
+}

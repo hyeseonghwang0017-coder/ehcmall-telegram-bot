@@ -1,0 +1,3 @@
+fastapi==0.128.7
+uvicorn==0.40.0
+reportlab==4.5.0

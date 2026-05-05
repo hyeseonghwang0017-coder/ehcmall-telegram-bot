@@ -41,12 +41,12 @@ requirements:
 
 **테이블 전체 조회:**
 ```
-exec: /opt/anaconda3/bin/python3 -c "import urllib.request, sys; r=urllib.request.urlopen('http://127.0.0.1:8000/v1/explain?table={테이블명}'); print(r.read().decode())"
+exec: python3 -c "import urllib.request, sys; r=urllib.request.urlopen('http://127.0.0.1:8000/v1/explain?table={테이블명}'); print(r.read().decode())"
 ```
 
 **특정 컬럼 조회 (컬럼 코드가 언급된 경우):**
 ```
-exec: /opt/anaconda3/bin/python3 -c "import urllib.request, sys; r=urllib.request.urlopen('http://127.0.0.1:8000/v1/explain?table={테이블명}&column={컬럼코드}'); print(r.read().decode())"
+exec: python3 -c "import urllib.request, sys; r=urllib.request.urlopen('http://127.0.0.1:8000/v1/explain?table={테이블명}&column={컬럼코드}'); print(r.read().decode())"
 ```
 
 exit ≠ 0 이거나 stderr에 에러가 있으면 오류로 처리한다.

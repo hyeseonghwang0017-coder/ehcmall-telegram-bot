@@ -26,12 +26,12 @@ requirements:
 
 **키워드 검색 (첫 질의 — limit 10):**
 ```
-exec: /opt/anaconda3/bin/python3 -c "import urllib.request, urllib.parse; p=urllib.parse.urlencode({'q':'{검색어}','limit':'10'}); r=urllib.request.urlopen('http://127.0.0.1:8000/v1/search?'+p); print(r.read().decode())"
+exec: python3 -c "import urllib.request, urllib.parse; p=urllib.parse.urlencode({'q':'{검색어}','limit':'10'}); r=urllib.request.urlopen('http://127.0.0.1:8000/v1/search?'+p); print(r.read().decode())"
 ```
 
 **키워드 검색 (더 보기 — limit 250):**
 ```
-exec: /opt/anaconda3/bin/python3 -c "import urllib.request, urllib.parse; p=urllib.parse.urlencode({'q':'{검색어}','limit':'250'}); r=urllib.request.urlopen('http://127.0.0.1:8000/v1/search?'+p); print(r.read().decode())"
+exec: python3 -c "import urllib.request, urllib.parse; p=urllib.parse.urlencode({'q':'{검색어}','limit':'250'}); r=urllib.request.urlopen('http://127.0.0.1:8000/v1/search?'+p); print(r.read().decode())"
 ```
 
 **도메인까지 지정 (예: 쇼핑몰에서만 프로모션 관련 테이블):**  
@@ -41,16 +41,16 @@ exec: /opt/anaconda3/bin/python3 -c "import urllib.request, urllib.parse; p=urll
 • 더 보기: `limit=250`
 
 ```
-exec: /opt/anaconda3/bin/python3 -c "import urllib.request, urllib.parse; p=urllib.parse.urlencode({'q':'{검색어}','domain':'{도메인}','limit':'10'}); r=urllib.request.urlopen('http://127.0.0.1:8000/v1/search?'+p); print(r.read().decode())"
+exec: python3 -c "import urllib.request, urllib.parse; p=urllib.parse.urlencode({'q':'{검색어}','domain':'{도메인}','limit':'10'}); r=urllib.request.urlopen('http://127.0.0.1:8000/v1/search?'+p); print(r.read().decode())"
 ```
 
 ```
-exec: /opt/anaconda3/bin/python3 -c "import urllib.request, urllib.parse; p=urllib.parse.urlencode({'q':'{검색어}','domain':'{도메인}','limit':'250'}); r=urllib.request.urlopen('http://127.0.0.1:8000/v1/search?'+p); print(r.read().decode())"
+exec: python3 -c "import urllib.request, urllib.parse; p=urllib.parse.urlencode({'q':'{검색어}','domain':'{도메인}','limit':'250'}); r=urllib.request.urlopen('http://127.0.0.1:8000/v1/search?'+p); print(r.read().decode())"
 ```
 
 **도메인 전체 목록:**
 ```
-exec: /opt/anaconda3/bin/python3 -c "import urllib.request; r=urllib.request.urlopen('http://127.0.0.1:8000/v1/domains'); print(r.read().decode())"
+exec: python3 -c "import urllib.request; r=urllib.request.urlopen('http://127.0.0.1:8000/v1/domains'); print(r.read().decode())"
 ```
 
 exit ≠ 0 이면 "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요."로 처리한다.
