@@ -30,7 +30,9 @@ from catalog_dates import (
 DEFAULT_SEARCH_LIMIT = 50      # /v1/search 기본 반환 개수
 MAX_SEARCH_LIMIT = 250        # limit 파라미터 상한 (과대 응답 방지)
 
-INDEX_PATH = pathlib.Path(os.getenv("INDEX_PATH", "/data/ehcmall_index.json"))
+INDEX_PATH = pathlib.Path(
+    os.getenv("INDEX_PATH", str(pathlib.Path(__file__).parent.parent / "data" / "ehcmall_index.json"))
+)
 
 
 # ──────────────────────────────────────────────
