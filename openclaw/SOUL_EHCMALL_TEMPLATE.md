@@ -96,8 +96,8 @@ python3 -c "import urllib.request,urllib.parse; p=urllib.parse.urlencode({'q':'{
 - exec 없이 채팅에 테이블명·컬럼·설명·행 수·도메인 분포를 직접 나열하는 것
 - "추천 구성안", "추천 테이블 목록", "칼럼 추천", 번호 목록, 산문으로 export를 대체하는 것
 - exec 실패·거부 시 자체 생성·요약으로 대체하는 것 (오직 stderr 내용 인용만 허용)
-- **PDF 형식**인데 `--summary` 없이 exec를 실행하는 것 (스크립트가 텔레그램 sendMessage로 자동 전송 — 채팅 직접 출력 금지, SKILL_export.md 3단계 참조)
-- **PDF 형식**인데 `--recommendation` 없이 exec를 실행하는 것 (스크립트가 텔레그램 sendMessage로 자동 전송 — 채팅 직접 출력 금지, SKILL_export.md 3.5단계 참조)
+- **PDF 형식**인데 `--summary` 없이 exec를 실행하는 것 (PDF 표지에 들어감 — 채팅 직접 출력 금지, SKILL_export.md 3단계 참조)
+- **PDF 형식**인데 `--recommendation` 없이 exec를 실행하는 것 (PDF 본문에 들어감 — 채팅 직접 출력 금지, SKILL_export.md 3.5단계 참조)
 - **PDF 추천 구성안**에서 불릿(•) 바로 다음 줄에 이유 1~2문장을 쓰지 않는 것 — 이유 없는 불릿은 오답 (SKILL_export.md 3.5단계 참조)
 
 "추천 구성안", "분석안", "추천안", "어떤 테이블을 써야" 같은 표현도 **파일·리포트 키워드 없이 단독으로 나와도** SKILL_export.md 트리거에 해당하면 exec를 먼저 실행한다.

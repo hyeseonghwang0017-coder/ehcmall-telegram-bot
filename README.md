@@ -90,13 +90,6 @@ LLM → 한국어 답변 → 텔레그램
 - 도메인 1개: `[도메인 분포] 재고: 35개`
 - 도메인 2개 이상: `[경고] 도메인 분포: 재고: 35개 | 기준정보: 10개 — 여러 도메인이 섞였습니다`
 
-### summary 자동 텔레그램 전송
-
-PDF 전송 직전, `--summary` 또는 `--recommendation` 값이 있으면 텍스트 메시지를 먼저 발송한다.
-
-- `_send_message(token, chat_id, text)` 신규 추가 (Telegram `sendMessage` API 래퍼)
-- `parse_mode` 없이 plain text 전송 (Markdown 400 오류 방지)
-
 ### SKILL 분기 체크리스트
 
 `openclaw/SKILL_export.md` frontmatter에 exec 전 3분기 결정 체크리스트를 추가했다.
@@ -182,4 +175,36 @@ pm2 logs ehcmall-bot --raw  # 실시간 로그
 | `GET /v1/tables?domain=도메인명` | 도메인 소속 테이블 전체 목록 |
 | `GET /v1/overview` | DB 전체 개요 (규모·도메인 분포·상위 테이블) |
 | `GET /health` | 서버 상태 및 로드된 테이블 수 확인 |
+
+---
+
+## 한계점과 개선점
+
+### 1. SKILL 프롬프트 반영의 어려움
+
+**현상**
+
+- 봇은 `~/.openclaw/skills/<skill>/SKILL.md` 와 `~/.openclaw/workspace-ehcmall/SOUL.md` 파일을 시스템 프롬프트로 읽는다.
+- 이 파일들을 수정해도 LLM이 일부 규칙만 따르고, "메시지로 줘" 같은 후속 분기를 무시하는 경우가 많다.
+- 같은 요청을 여러 번 해도 일관성 없이 동작한다.
+
+**원인 추정**
+
+- 현재 봇은 OpenAI **ChatGPT Team(`openai-codex/gpt-5.4`)** OAuth 모델을 사용한다.
+- ChatGPT 채널은 API 호출과 달리 **시스템 프롬프트가 길면 내부에서 요약·압축**되어 일부 규칙이 누락될 수 있다.
+- `SKILL_export.md` 만 약 590줄(~30KB)로 길고, SOUL·system_prompt 와 규칙이 일부 중복돼 신호가 분산된다.
+
+**개선안**
+
+- (A) **플러그인으로 강제하기 (가장 확실)** — `plugin-ehcmall-export-gate` 같은 `before_dispatch` 훅에 분기 로직을 JS 코드로 구현하면 LLM 응답 변동성에 영향을 받지 않는다.
+- (B) **SKILL 파일 다이어트** — 핵심 트리거·exec 명령만 남기고 50~100줄로 압축. 중복된 SOUL·system_prompt 규칙은 한 곳으로 통합.
+- (C) **Anthropic API 키 사용** — Claude 모델은 긴 시스템 프롬프트도 비교적 충실히 따른다. Anthropic API Key가 있으면 `~/.openclaw/openclaw.json` 의 모델 프로바이더를 변경.
+
+### 2. 텔레그램 페어링 자동 승인
+
+신규 사용자 페어링 요청은 owner 가 서버 SSH 로 `openclaw pairing approve telegram <CODE>` 를 실행해야 승인된다. `pairing_notifier.py` 가 텔레그램으로 요청 알림을 보내주지만, 텔레그램 1:1 DM 의 `/approve` 명령으로 승인하는 플러그인(`plugin-ehcmall-pairing-relay`)은 게이트웨이 self-call 이슈로 현재 비활성화 상태다. 임시로는 `~/.openclaw/credentials/telegram-ehcmall-allowFrom.json` 의 `allowFrom` 배열에 user_id 를 직접 추가해 우회한다.
+
+### 3. 파일 저장 위치
+
+봇이 서버에서 24/7 운영되므로 PDF/CSV 결과물은 **서버의 `/home/ubuntu/Downloads/ehcmall-reports/`** 에만 저장된다. 사용자 Mac 으로 가져오려면 텔레그램 첨부 다운로드 또는 `rsync` 동기화를 사용한다 (예시 alias `ehcsync`). Mac OpenClaw 가 봇을 처리하던 시기에는 `~/Downloads/...` 에 직접 저장되었지만, 서버 운영 모드에서는 불가능하다.
 
