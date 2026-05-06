@@ -202,7 +202,7 @@ pm2 logs ehcmall-bot --raw  # 실시간 로그
 
 ### 2. 텔레그램 페어링 자동 승인
 
-신규 사용자 페어링 요청은 owner 가 서버 SSH 로 `openclaw pairing approve telegram <CODE>` 를 실행해야 승인된다. `pairing_notifier.py` 가 텔레그램으로 요청 알림을 보내주지만, 텔레그램 1:1 DM 의 `/approve` 명령으로 승인하는 플러그인(`plugin-ehcmall-pairing-relay`)은 게이트웨이 self-call 이슈로 현재 비활성화 상태다. 임시로는 `~/.openclaw/credentials/telegram-ehcmall-allowFrom.json` 의 `allowFrom` 배열에 user_id 를 직접 추가해 우회한다.
+신규 사용자 페어링 요청은 owner 가 서버 SSH 로 `openclaw pairing approve telegram <CODE>` 를 실행해야 승인된다. `pairing_notifier.py` 가 텔레그램으로 요청 알림을 보내주지만, 텔레그램 1:1 DM 의 `/approve` 명령으로 승인하는 플러그인(`plugin-ehcmall-pairing-relay`)은 현재 디버깅 상태에 있어 비활성화 상태다. 
 
 ### 3. 파일 저장 위치
 
